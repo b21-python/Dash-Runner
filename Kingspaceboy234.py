@@ -12,11 +12,13 @@ GREEN = (50, 168, 212)
 ORANGE = (255, 102, 201) 
 #Accessors
 X = 0
-Y = 1
+Y = 1  # Move enemies to follow the player
+
+    
 W = 2
 H = 3
 
-####game variables####
+####game variables####for
 playerSprite = pygame.image.load("dude.png")
 
 #Player state       X   Y   W   H
@@ -34,7 +36,7 @@ screen = pygame.display.set_mode([width, height])
 
 obstacles = [Rect (160, 0, 20, 120), Rect (480, 0, 50, 120), Rect(130, 400, 100, 120), Rect(320, 200, 100, 120), Rect (10, 0, 20, 20)]
 
-#Holds the current direction(s) the player is moving.  Set to no movement
+
 #       left-a right-d up-w  down-s
 keys = { K_a:0, K_d:0, K_w:0, K_s:0 }
 
@@ -85,9 +87,35 @@ while gameActive:
     updatedX = player["Area"][X] + xMovement
     updatedY = player["Area"][Y] + yMovement
     
-   
-    # Move enemies to follow the player
+
+      
+    # Detect if the updated position intersects with any obstacles
+    updatedPlayerRect = Rect(updatedX, updatedY, player["Area"][W], player["Area"][H])
+    intersectsObstacles = updatedPlayerRect.collidelist(obstacles) != -1
+
+    #Update player position if new position is in bounds
+    if not intersectsObstacles and updatedX >= 0 and updatedX + player["Area"][W] <= width:
+        player["Area"][X] = updatedX
+    if not intersectsObstacles and updatedY >= 0 and updatedY + player["Area"][H] <= height:
+        player["Area"][Y] = updatedY
+    
+           # Move Y  # Move enemies to follow the player
     for enemy in enemyLocations:
+        
+        # Determine line of sight by drawing line between
+        # enemy and player then test if it intersects with any obstacles
+        enemyRect = Rect(enemy[X], enemy[Y], 10, 10)
+        hasLineOfSight = True
+        for ob in obstacles:
+            if ob.clipline(enemyRect.center, updatedPlayerRect.center):
+                hasLineOfSight = False
+                break
+        
+        # if the enemy cannot see the player do not move it towards the player
+        if not hasLineOfSight:
+            continue
+
+
         # Move X
         if player["Area"][X] < enemy[X]:
             enemy[X] -= enemySpeed
@@ -98,16 +126,6 @@ while gameActive:
             enemy[Y] -= enemySpeed
         elif player["Area"][Y] > enemy[Y]:
             enemy[Y] += enemySpeed
-
-    # Detect if the updated position intersects with any obstacles
-    updatedPlayerRect = Rect(updatedX, updatedY, player["Area"][W], player["Area"][H])
-    intersectsObstacles = updatedPlayerRect.collidelist(obstacles) != -1
-
-    #Update player position if new position is in bounds
-    if not intersectsObstacles and updatedX >= 0 and updatedX + player["Area"][W] <= width:
-        player["Area"][X] = updatedX
-    if not intersectsObstacles and updatedY >= 0 and updatedY + player["Area"][H] <= height:
-        player["Area"][Y] = updatedY
         
           # Spawn new enemies
     randval = random.randrange(60)
