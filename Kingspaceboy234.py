@@ -99,10 +99,10 @@ while gameActive:
 
     #Update player position if new position is in bounds
     if not intersectsObstacles and updatedX >= 0 and updatedX + player["Area"][W] <= width:
-        player["Area"][X] = updatedX
+        player["Area"][X] = updatedX 
     if not intersectsObstacles and updatedY >= 0 and updatedY + player["Area"][H] <= height:
         player["Area"][Y] = updatedY
-    
+    list = []
     # Move Y  # Move enemies to follow the player
     for enemy in enemyLocations:
         # Determine line of sight by drawing line between
@@ -116,8 +116,9 @@ while gameActive:
         if updatedPlayerRect.colliderect(enemyRect):
             player["Health"] -=10
             print(player["Health"])
-            
-            
+        else:
+        #add the enemy to the list
+            list.append(enemy)
         # if the enemy cannot see the player do not move it towards the player
         if not hasLineOfSight:
             continue
@@ -135,7 +136,7 @@ while gameActive:
             enemy[Y] -= enemySpeed
         elif player["Area"][Y] > enemy[Y]:
             enemy[Y] += enemySpeed
-        
+    enemyLocations = list
     # Spawn new enemies
     randval = random.randrange(60)
     if randval == 7:
@@ -149,4 +150,4 @@ pygame.quit()
 
 
 
-
+ 
