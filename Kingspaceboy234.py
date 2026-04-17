@@ -22,9 +22,9 @@ H = 3
 playerSprite = pygame.image.load("dude.png")
 
 #Player state       X   Y   W   H
-player = { "Area":[30, 30, 80, 80], "Color":ORANGE, "Speed":30, "Sprite":playerSprite, "Speed":10 }
-    
-#game window size
+player = { "Area":[30, 30, 80, 80], "Color":ORANGE, "Sprite":playerSprite, "Speed":20, "Health": 200}
+
+    #game window size
 width = 640
 height = 480
 
@@ -48,6 +48,7 @@ gameActive = True
 enemyLocations = []
 spawnLocaion = [640, 240]
 enemySpeed = 5
+        
 
 #Main Game loop.  The game runs until the user quits
 while gameActive:
@@ -93,15 +94,17 @@ while gameActive:
     updatedPlayerRect = Rect(updatedX, updatedY, player["Area"][W], player["Area"][H])
     intersectsObstacles = updatedPlayerRect.collidelist(obstacles) != -1
 
+    list_of_lists = [[1, 1, 1, 1], [2, 2, 2, 2]]
+    indices1 = updatedPlayerRect.collidelistall(list_of_lists)
+
     #Update player position if new position is in bounds
     if not intersectsObstacles and updatedX >= 0 and updatedX + player["Area"][W] <= width:
         player["Area"][X] = updatedX
     if not intersectsObstacles and updatedY >= 0 and updatedY + player["Area"][H] <= height:
         player["Area"][Y] = updatedY
     
-           # Move Y  # Move enemies to follow the player
+    # Move Y  # Move enemies to follow the player
     for enemy in enemyLocations:
-        
         # Determine line of sight by drawing line between
         # enemy and player then test if it intersects with any obstacles
         enemyRect = Rect(enemy[X], enemy[Y], 10, 10)
@@ -110,11 +113,17 @@ while gameActive:
             if ob.clipline(enemyRect.center, updatedPlayerRect.center):
                 hasLineOfSight = False
                 break
-        
+        if updatedPlayerRect.colliderect(enemyRect):
+            player["Health"] -=10
+            print(player["Health"])
+            
+            
         # if the enemy cannot see the player do not move it towards the player
         if not hasLineOfSight:
             continue
 
+            list_of_lists = [[1, 1, 1, 1], [2, 2, 2, 2]]
+            indices1 = updatedPlayerRect.collidelistall(list_of_lists)
 
         # Move X
         if player["Area"][X] < enemy[X]:
@@ -127,11 +136,17 @@ while gameActive:
         elif player["Area"][Y] > enemy[Y]:
             enemy[Y] += enemySpeed
         
-          # Spawn new enemies
+    # Spawn new enemies
     randval = random.randrange(60)
     if randval == 7:
-      #  enemyLocations.append(spawnLocaion.copy())
-         enemyLocations.append([width , random.randrange(height)])
+        print ("spawn")          
+        #  enemyLocations.append(spawnLocaion.copy())
+        enemyLocations.append([width , random.randrange(height)])
 
 #end pygame
 pygame.quit()
+
+
+
+
+
