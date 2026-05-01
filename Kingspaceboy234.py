@@ -6,6 +6,7 @@ import random
 #Initialize the pygame
 pygame.init()
 
+font = pygame.font.Font(pygame.font.get_default_font(),36) 
 ####constants####
 #Colors
 GREEN = (50, 168, 212) 
@@ -68,6 +69,10 @@ while gameActive:
         
     for enemy in enemyLocations:
         pygame.draw.rect(screen, "red", [enemy[X], enemy[Y], 10, 10])
+        
+    text_surface = font.render(str(player["Health"]), True, (0, 0, 0))
+    screen.blit(text_surface, dest=(0,0))
+    
         
     #Draw arena (surface)
     pygame.display.update()
@@ -143,6 +148,19 @@ while gameActive:
         print ("spawn")          
         #  enemyLocations.append(spawnLocaion.copy())
         enemyLocations.append([width , random.randrange(height)])
+#end game with false gameactive
+    if (player["Health"]) <= 0:
+    
+        gameActive = False
+        
+while True:
+    text_surface = font.render('Your run is OVER!', True, (0, 0, 0))
+    screen.blit(text_surface, dest=(180,240))
+
+    pygame.display.update()
+
+
+
 
 #end pygame
 pygame.quit()
