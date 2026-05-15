@@ -23,7 +23,7 @@ H = 3
 playerSprite = pygame.image.load("dude.png")
 
 #Player state       X   Y   W   H
-player = { "Area":[30, 30, 80, 80], "Color":ORANGE, "Sprite":playerSprite, "Speed":20, "Health": 200}
+player = { "Area":[20, 30, 30, 20], "Color":ORANGE, "Sprite":playerSprite, "Speed":20, "Health": 200}
 
     #game window size
 width = 640
@@ -56,6 +56,7 @@ while gameActive:
 
     #Limit to 60 FPS
     gameClock.tick(30)
+ 
 
     #Fill screen with bg color
     screen.fill(GREEN)
@@ -71,9 +72,12 @@ while gameActive:
         pygame.draw.rect(screen, "red", [enemy[X], enemy[Y], 10, 10])
         
     text_surface = font.render(str(player["Health"]), True, (0, 0, 0))
-    screen.blit(text_surface, dest=(0,0))
+    screen.blit(text_surface, dest=(300,0))
     
-        
+    time = pygame.time.get_ticks()
+    text_surface = font.render(str(round(time/1000,1)), True, (0, 0, 0))
+    screen.blit(text_surface, dest=(540,0))
+    
     #Draw arena (surface)
     pygame.display.update()
     
@@ -147,19 +151,34 @@ while gameActive:
     if randval == 7:
         print ("spawn")          
         #  enemyLocations.append(spawnLocaion.copy())
-        enemyLocations.append([width , random.randrange(height)])
-#end game with false gameactive
+        side = random.randrange(4)
+        if side == 0:
+            enemyLocations.append([random.randrange(width), 0])
+        elif side == 1:
+            enemyLocations.append([width , random.randrange(height)])
+        elif side == 2 :
+            enemyLocations.append([random.randrange(width), height])
+        else:
+            enemyLocations.append([0,random.randrange(height)])
+                              
+    #end game with false gameactive
     if (player["Health"]) <= 0:
-    
+      
         gameActive = False
         
+        
+   
+  
+  
 while True:
     text_surface = font.render('Your run is OVER!', True, (0, 0, 0))
-    screen.blit(text_surface, dest=(180,240))
-
+    screen.blit(text_surface, dest=(170,240))
     pygame.display.update()
-
-
+    
+    #Loop over input to see if the user quits
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:             #The user quit
+            pygame.quit()
 
 
 #end pygame
